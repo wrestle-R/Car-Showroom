@@ -1,19 +1,38 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Car } from "lucide-react";
 import axios from "axios";
 
-const Search = () => {
-  const [preferences, setPreferences] = useState({
+// Define the types for preferences
+interface Preferences {
+  familySize: string;
+  location: string;
+  priority: string;
+  usage: string;
+}
+
+// Define the car data structure (from the API response)
+interface CarData {
+  make: string;
+  model: string;
+  year: number;
+  class: string;
+  fuel_type: string;
+  transmission: string;
+}
+
+const Search: React.FC = () => {
+  const [preferences, setPreferences] = useState<Preferences>({
     familySize: "",
     location: "",
     priority: "",
     usage: "",
   });
-  const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
+  const [cars, setCars] = useState<CarData[]>([]);  // Array of car objects
+  const [loading, setLoading] = useState<boolean>(false);  // Loading state as boolean
+  const [error, setError] = useState<string>("");  // Error state as string
 
   const options = {
     location: ["Urban City", "Suburban Area", "Rural Area", "Mixed Terrain"],
@@ -30,7 +49,7 @@ const Search = () => {
     luxury: ["bmw", "mercedes-benz", "lexus"],
   };
 
-  const getRecommendedMakes = ({ familySize, location, priority }) => {
+  const getRecommendedMakes = ({ familySize, location, priority }: Preferences): string[] => {
     const size = parseInt(familySize);
     let makes = size <= 2 ? carMakes.sedan.concat(carMakes.compact) : size <= 4 ? carMakes.suv.concat(carMakes.sedan) : carMakes.minivan.concat(carMakes.suv);
     if (location === "Rural Area") makes = makes.concat(carMakes.pickup, carMakes.suv);
@@ -39,7 +58,7 @@ const Search = () => {
     return [...new Set(makes)];
   };
 
-  const fetchCars = async () => {
+  const fetchCars = async (): Promise<void> => {
     setLoading(true);
     setError("");
     try {
@@ -47,12 +66,17 @@ const Search = () => {
       const responses = await Promise.all(
         makes.map((make) =>
           axios.get("https://api.api-ninjas.com/v1/cars", {
-            headers: { "X-Api-Key": "p0gM6mlEEp8lGzk13BGgRQ==L50gLtNkT6XlyGSX" },
+            headers: { "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY },
             params: { make, year: 2020 },
           })
         )
       );
-      setCars(responses.flatMap((res) => res.data));
+
+      const carsData = responses.flatMap((res) => res.data);
+      if (carsData.length === 0) {
+        setError("No cars found. Try different preferences.");
+      }
+      setCars(carsData);
     } catch (err) {
       setError("Failed to fetch recommendations. Please try again.");
     } finally {
@@ -60,7 +84,7 @@ const Search = () => {
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent): void => {
     e.preventDefault();
     fetchCars();
   };
@@ -81,12 +105,12 @@ const Search = () => {
                 </label>
                 <select
                   className="w-full bg-white/20 text-white py-4 px-5 rounded-xl border border-white/30 focus:ring-2 focus:ring-white/50"
-                  value={preferences[key]}
+                  value={preferences[key as keyof Preferences]}
                   onChange={(e) => setPreferences({ ...preferences, [key]: e.target.value })}
                   required
                 >
                   <option value="">Select an option</option>
-                  {options[key].map((option) => (
+                  {options[key as keyof typeof options].map((option) => (
                     <option key={option} value={option} className="text-black">
                       {option}
                     </option>
@@ -95,10 +119,7 @@ const Search = () => {
               </div>
             ))}
           </div>
-          <button
-            type="submit"
-            className="mt-10 bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-xl"
-          >
+          <button type="submit" className="mt-10 bg-blue-600 hover:bg-blue-700 text-white py-3 px-8 rounded-xl">
             Get Recommendations
           </button>
         </form>
