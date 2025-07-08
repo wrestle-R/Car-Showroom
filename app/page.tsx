@@ -1,18 +1,17 @@
-import Hero from '@/Components/Hero'
-import Search from '@/Components/Search'
-import React from 'react'
+"use client";
+
+import Hero from '@/Components/Hero';
+import Search from '@/Components/Search';
+import React from 'react';
 
 
-const page = () => {
+const Page = () => {
   return (
-  <>
-    
-    <Hero/>
-    <Search/>
-    
-  </>
-    
-  )
-}
+    <>
+      <Hero/>
+      <Search/>
+    </>
+  );
+};
 
-export default page
+export default Page;

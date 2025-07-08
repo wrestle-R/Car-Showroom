@@ -27,7 +27,7 @@ const Header = () => {
               Home
             </a>
             <a
-              href="#"
+              href="/car-finder"
               className="text-gray-300 hover:text-blue-600 px-3 py-2 rounded-md text-sm font-medium"
             >
               Car Finder
