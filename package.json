@@ -13,7 +13,7 @@
     "debug": "^4.4.0",
     "follow-redirects": "^1.15.9",
     "lucide-react": "^0.471.1",
-    "next": "^15.2.8",
+    "next": "^16.1.5",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
     "react-router-dom": "^7.5.2"
