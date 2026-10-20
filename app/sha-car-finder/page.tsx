@@ -73,7 +73,7 @@ export default function ShaCarFinder() {
       });
 
       setCars(response.data);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
       setError("Failed to fetch cars. Please try again.");
     } finally {
